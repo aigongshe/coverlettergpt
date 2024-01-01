@@ -17,6 +17,7 @@ app applyai {
         "<!-- Google tag (gtag.js) --><script async src=\"https://www.googletagmanager.com/gtag/js?id=G-SXYZR2FHVJ\"></script><script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-SXYZR2FHVJ');</script>"
   ],
   // 🔐 Auth out of the box! https://wasp-lang.dev/docs/language/features#authentication--authorization
+  // 认证，这里是社交账号认证配置
   auth: {
     userEntity: User,
     externalAuthEntity: SocialLogin,
@@ -28,13 +29,16 @@ app applyai {
     },
     onAuthFailedRedirectTo: "/",
   },
+  // 数据库配置这里是数据库配置文件
   db: {
     system: PostgreSQL
   },
+
   client: {
     rootComponent: import App from "@client/App",
     setupFn: import clientSetup from "@client/clientSetup"
   },
+
   emailSender: {
     provider: SendGrid,
     defaultFrom: {
@@ -42,6 +46,7 @@ app applyai {
       email: "vince@wasp-lang.dev",
     },
   },
+
   dependencies: [
     ("node-fetch", "3.3.0"),
     ("@chakra-ui/react", "2.8.0"),
@@ -96,6 +101,7 @@ entity SocialLogin {=psl
   @@unique([provider, providerId, userId])
 psl=}
 
+
 entity LnData {=psl
   id                        String                @id @default(uuid())
   user                      User?                 @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -106,6 +112,7 @@ entity LnData {=psl
   createdAt                 DateTime              @default(now())
   updatedAt                 DateTime?             @updatedAt
 psl=}
+
 // type LightningInvoice = {
 //   status: string;
 //   successAction: {
@@ -116,6 +123,7 @@ psl=}
 //   routes: any[]; // You can replace this with a more specific type if needed
 //   pr: string;
 // };
+
 entity LnPayment {=psl
   pr                        String                @id @unique
   status                    String
@@ -126,6 +134,7 @@ entity LnPayment {=psl
   createdAt                 DateTime              @default(now())
   updatedAt                 DateTime?             @updatedAt
 psl=}
+
 
 entity CoverLetter {=psl
   id                        String                @id @default(uuid())
@@ -139,6 +148,7 @@ entity CoverLetter {=psl
   createdAt                 DateTime              @default(now())
   updatedAt                 DateTime?             @updatedAt
 psl=}
+
 
 entity Job {=psl
   id                        String                @id @default(uuid())
@@ -154,42 +164,50 @@ entity Job {=psl
   isCompleted               Boolean               @default(false)
 psl=}
 
+
 /* 📡 These are the Wasp Routes (You can protect them easily w/ 'authRequired: true');
  * https://wasp-lang.dev/docs/language/features#route
  */
 
 route RootRoute { path: "/", to: MainPage }
+
 page MainPage {
   component: import Main from "@client/MainPage"
 }
 
 route CoverLetterPage { path: "/cover-letter/:id", to: CoverLetterPage }
+
 page CoverLetterPage {
   component: import CoverLetter from "@client/CoverLetterPage"
 }
 
 route LoginRoute { path: "/login", to: LoginPage }
+
 page LoginPage {
   component: import Login from "@client/LoginPage"
 }
 
 route JobsRoute { path: "/jobs", to: JobsPage }
+
 page JobsPage {
   authRequired: true,
   component: import Jobs from "@client/JobsPage"
 }
 
 route ProfileRoute { path: "/profile", to: ProfilePage }
+
 page ProfilePage {
   authRequired: true,
   component: import Profile from "@client/ProfilePage"
 }
 
 route CheckoutRoute { path: "/checkout", to: CheckoutPage }
+
 page CheckoutPage {
   authRequired: true,
   component: import Checkout from "@client/CheckoutPage"
 }
+
 
 /* ⛑ These are the Wasp Operations, which allow the client and server to interact:
  * https://wasp-lang.dev/docs/language/features#queries-and-actions-aka-operations
@@ -207,20 +225,24 @@ action createJob {
   entities: [Job]
 }
 
+
 action updateJob {
   fn: import { updateJob } from "@server/actions.js",
   entities: [Job]
 }
+
 
 action updateCoverLetter {
   fn: import { updateCoverLetter } from "@server/actions.js",
   entities: [Job, CoverLetter, User, LnPayment]
 }
 
+
 action generateEdit {
   fn: import { generateEdit } from "@server/actions.js",
   entities: [CoverLetter, User, LnPayment]
 }
+
 
 action editCoverLetter {
   fn: import { editCoverLetter } from "@server/actions.js",
