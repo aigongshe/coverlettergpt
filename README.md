@@ -1,41 +1,40 @@
-# CoverLetterGPT.xyz
+在本地运行
 
-<img src='src/client/public/homepage.png' width='600px'/>
+在克隆此存储库后，您可以按照以下步骤在本地运行它：
 
-## Running it locally
-After cloning this repo, you can run it locally by following these steps:
+1. 在终端中运行 curl -sSL https://get.wasp-lang.dev/installer.sh | sh来安装Wasp
+2. 在项目的根目录中创建 .env.server文件
+3. 复制 env.server.example 文件内容到 .env.server ，并填写您的API密钥
+4. 确保您有一个连接和运行的数据库。这里有两个快速的选择：
 
-1. Install [Wasp](https://wasp-lang.dev) by running `curl -sSL https://get.wasp-lang.dev/installer.sh | sh` in your terminal.
-2. Create a `.env.server` file in the root of the project
-3. Copy the `env.server.example` file contents to `.env.server` and fill in your API keys
-4. Make sure you have a Database connected and running. Here are two quick options:
-  - run `wasp start db` from the project root. You need to have Docker installed (if not, on MacOS run `brew install docker-machine docker` and start the Docker app). This will start a Postgres database and configure it for you. No need to do anything else!
-  - or provision a Postgres database on [Railway](https://railway.app), go to settings and copy the connection url. Paste it as DATABASE_URL=<your-postgres-connection-url> into your env.server file.
-5. Run `wasp db migrate-dev`
-6. Run `wasp start`
-7. Go to `localhost:3000` in your browser (your NodeJS server will be running on port `3001`)
-8. install the [Wasp extension for VSCode](https://marketplace.visualstudio.com/items?itemName=wasp-lang.wasp) for the best DX
+• 从项目根目录运行 wasp start db 。您需要安装 Docker（如果没有，在 MacOS 上运行 brew install docker-machine docker 并启动 Docker 应用程序）。这将启动一个 Postgres 数据库并为您配置它。不需要做任何其他事情！
+• 或者在Railway上提供一个 Postgres 数据库，进入设置并复制连接 url。将其粘贴为 DATABASE_URL= 输入到您的 env.server 文件。
 
-## How it works
+1. 运行 wasp db migrate-dev
+2. 运行 wasp start
+3. 在您的浏览器中转到 localhost:3000（您的 NodeJS 服务器将在端口 3001上运行）
+4. 安装Wasp 的 VSCode 扩展以获得最佳的 DX
 
-[coverlettergpt.xyz](http://coverlettergpt.xyz) was built in a couple of days using a few really cool tools:
+工作原理
 
-- 🐝 [Wasp](https://wasp-lang.dev) - allows you to build full-stack apps with 10x less boilerplate
-- 🎨 [Chakra-ui](https://chakra-ui.com/) - UI components for React that look good and are easy to work with
-- 🤖 [OpenAI](https://openai.com/) - GPT-3.5 turbo and GPT-4 API
-- 💸 [Stripe](https://stripe.com/) - for payments
-- ⚡️ [Lightning / Bolt11](https://github.com/bitcoinjs/bolt11) - for Bitcoin Lightning payments
+coverlettergpt.xyz使用了几个非常酷的工具在几天内构建：
 
-[Wasp](https://wasp-lang.dev) as the full-stack framework allows you to describe your app’s core features in the `main.wasp` config file in the root directory. Then it builds and glues these features into a React-Express-Prisma app for you so that you can focus on writing the client and server-side logic instead of configuring. For example, I did not have to use any third-party libraries for Google Authentication. I just wrote a couple lines of code in the config file stating that I want to use Google Auth, and Wasp configures it for me. Check out the `main.wasp` file for more.
+• 🐝 Wasp - 允许你用减少10倍的样板代码构建全栈应用
+• 🎨 Chakra-ui - 对于 React 来说易于使用且外观良好的 UI 组件
+• 🤖 OpenAI - GPT-3.5 游戏和 GPT-4 API
+• 💸 Stripe - 用于付款
+• ⚡️ Lightning / Bolt11 - 用于比特币闪电支付
 
-Also, [Chakra-ui](https://chakra-ui.com/) is great for building nice looking UI’s really quickly and easily. Some people are turned off by the fact that they’re React components, but I find that they’re easy to customize and configure, and get me started on designs 10x faster and with less code than tailwind.
+Wasp作为全栈框架，允许你在根目录的 main.wasp 配置文件中描述你的应用的核心功能。然后，它将这些功能构建并粘贴到一个 React-Express-Prisma 应用中，这样你就可以集中精力编写客户端和服务器端逻辑，而不是配置。例如，我不必使用任何第三方库来进行谷歌认证。我只在配置文件中写了几行代码，说明我想要使用谷歌验证，Wasp 为我配置了。查看 main.wasp 文件以获取更多信息。
 
-For more info on the prompts and configuration I used for the [OpenAI](https://openai.com/) API, check out the `src/server/actions.ts` file.
+此外，Chakra-ui非常适合快速轻松地构建漂亮的 UI。有些人对它们是 React 组件感到失望，但我发现它们易于定制和配置，并且比 tailwind 更快地开始设计并使用更少的代码。
 
-[Stripe](https://stripe.com/) makes the payment functionality super easy. I configure two subscription products, one for GPT-3.5 turbo and another for GPT-4. After the user pays, I update their `hasPaid` and `datePaid` fields in the database.
+有关我为OpenAI API使用的提示和配置的更多信息，请查看 src/server/actions.ts 文件。
 
-[Lightning / Bolt11](https://github.com/bitcoinjs/bolt11) is a great library for working with Bitcoin Lightning payments. I used it to generate a Lightning invoice for the user to pay. After the user pays, I update their `LnPayment.status` field in the database (see `src/server/ln.ts`), which allows the user to perform a generation on the front-end. I personally accept the payments to my [Alby](https://getalby.com/) lightning address.
+Stripe使付款功能超级容易。我配置了两个订阅产品，一个是 GPT-3.5 turbo，另一个是 GPT-4。用户支付后，我更新数据库中的 hasPaid 和 datePaid 字段。
 
-I also implemented a cron job to send an email to the user to notify them 2 weeks before their subscription ends. I used [SendGrid](https://sendgrid.com/) for the email service.
+Lightning / Bolt11是一个处理比特币闪电支付的伟大库。我用它为用户生成了一个闪电发票。用户支付后，我更新数据库中的 LnPayment.status 字段(参见 src/server/ln.ts)，允许用户在前端执行一次生成。我个人接受支付到我的Alby闪电地址。
 
-If you have any other questions, feel free to reach out to me on [twitter](https://twitter.com/hot_town)
+我还实现了一个 cron 任务，用于在用户订阅结束前两周发送电子邮件通知他们。我使用SendGrid作为电子邮件服务。
+
+如果您有任何其他问题，请随时在twitter上联系我。
